@@ -1,0 +1,16 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package com.grpc.sender;
+
+message SendMessageRequest {
+  int64 id = 1;
+  string text = 2;
+}
+
+message SendMessageResponse {
+  string id = 1;
+}
+
+service SendMessageService {
+  rpc send(SendMessageRequest) returns (SendMessageResponse);
+}
