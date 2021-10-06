@@ -1,5 +1,6 @@
-package com.gprc.sender;
+package com.gprc;
 
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Service;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
-import com.grpc.sender.SendMessageServiceGrpc;
-import com.grpc.sender.SendMessageResponse;
+import com.grpc.SendMessageServiceGrpc;
+import com.grpc.LogMessageAck;
 
 @Service
 public class SendMessageServiceImpl {
@@ -20,22 +21,13 @@ public class SendMessageServiceImpl {
                                                   .usePlaintext()
                                                   .build();
     SendMessageServiceGrpc.SendMessageServiceBlockingStub stub = SendMessageServiceGrpc.newBlockingStub(channel);
-    int counter = 1;
-
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    AtomicBoolean done = new AtomicBoolean();
-    scheduler.schedule(() -> done.set(true), 10, TimeUnit.SECONDS);
-    SendMessageResponse sendResponse = null;
-    while (!done.get()) {
-      sendResponse = stub.send(com.grpc.sender.SendMessageRequest.newBuilder()
-                                                                 .setId(counter)
-                                                                 .setText("Message " + counter)
+    Random random = new Random();
+    int id = random.nextInt();
+    LogMessageAck sendResponse = stub.send(com.grpc.LogMessage.newBuilder()
+                                                                 .setId(id)
+                                                                 .setText("Message " + id)
                                                                  .build());
-      counter++;
-    }
-    scheduler.shutdownNow();
     channel.shutdownNow();
-
-    return sendResponse.getId();
+    return "ID " + sendResponse.getId() + " " + sendResponse.getStatus();
   }
 }
