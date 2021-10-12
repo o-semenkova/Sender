@@ -1,7 +1,5 @@
 package com.gprc;
 
-import java.util.Random;
-
 import org.springframework.stereotype.Service;
 
 import io.grpc.ManagedChannel;
@@ -13,17 +11,15 @@ import com.grpc.LogMessageAck;
 @Service
 public class SendMessageServiceImpl {
   public String send() {
-    ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
+    ManagedChannel channel = ManagedChannelBuilder.forAddress("master-grpc", 9090)
                                                   .usePlaintext()
                                                   .build();
     SendMessageServiceGrpc.SendMessageServiceBlockingStub stub = SendMessageServiceGrpc.newBlockingStub(channel);
-    Random random = new Random();
-    int id = random.nextInt();
     LogMessageAck sendResponse = stub.send(com.grpc.LogMessage.newBuilder()
-                                                                 .setId(id)
-                                                                 .setText("Message " + id)
+                                                                 .setId(0)
+                                                                 .setText("Message")
                                                                  .build());
     channel.shutdownNow();
-    return "ID " + sendResponse.getId() + " " + sendResponse.getStatus();
+    return sendResponse.getStatus();
   }
 }
