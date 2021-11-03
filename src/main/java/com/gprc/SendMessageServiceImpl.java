@@ -33,7 +33,7 @@ public class SendMessageServiceImpl {
       SendMessageServiceGrpc.SendMessageServiceStub stub = SendMessageServiceGrpc.newStub(channel);
       stub.send(message, new LogMessageCallback());
       try {
-        Thread.sleep(3000);
+        Thread.sleep(1000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
